@@ -70,7 +70,6 @@ public class NewGame extends JPanel implements ActionListener {
             checkSecond();
             second++;
             if (player1Hod) {
-                setVisibleComponents(true);
                 if (second == 100) {
                     fold(player2);
                     player1Hod = false;
@@ -95,7 +94,6 @@ public class NewGame extends JPanel implements ActionListener {
                 repaint();
 
             }else{
-                setVisibleComponents(false);
                 addComponents();
                 repaint();
                 if (second == 25) {
@@ -137,7 +135,6 @@ public class NewGame extends JPanel implements ActionListener {
     }
 
     private void raise(int j){
-            player1Hod = false;
             bank += j;
             checkBank();
             second = 0;
