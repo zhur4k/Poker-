@@ -26,8 +26,8 @@ public class Combination {
                     player1.changeCashOfPlayer(bank);
                     result = new StringBuilder(player1.getName() +" "+ combinationToString(combination1[0])+"\n");
                 } else if(combination1[1]<combination2[1]){
-                    player1.changeCashOfPlayer(bank);
-                    result = new StringBuilder(player1.getName() +" "+ combinationToString(combination1[0])+"\n");
+                    player2.changeCashOfPlayer(bank);
+                    result = new StringBuilder(player2.getName() +" "+ combinationToString(combination1[0])+"\n");
                 }else {
                     player1.changeCashOfPlayer(bank/2);
                     player2.changeCashOfPlayer(bank/2);
@@ -234,7 +234,7 @@ public class Combination {
                         kolvo++;
                     }
                 }
-                if(kolvo ==2){
+                if(kolvo >1){
                     cardsOfCombination[0] = 1;
                     return true;
                 }else kolvo =0;
