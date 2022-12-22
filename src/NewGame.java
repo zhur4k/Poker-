@@ -13,7 +13,7 @@ public class NewGame extends JPanel implements ActionListener {
     private final JScrollBar raiseScrollbar;
     private final JTextField textField,textFieldSecond,textFieldBank,textFieldOfMove,textFieldBank1Player,textFieldBank2Player;
 
-
+    private int kolvoVizovov;
     private int betOf1 = 0;
     private int betOf2 = 0;
 
@@ -71,7 +71,7 @@ public class NewGame extends JPanel implements ActionListener {
 
         this.textFieldOfMove = new JTextField();
         textFieldOfMove.setBackground(new Color(13,88,42));
-        textFieldOfMove.setFont(new Font("TimesRoman", Font.PLAIN, 25));
+        textFieldOfMove.setFont(new Font("TimesRoman", Font.PLAIN, 15));
 
 
         this.textFieldBank = new JTextField();
@@ -91,6 +91,7 @@ public class NewGame extends JPanel implements ActionListener {
         second = 0;
         stepOfGame=0;
         bank = 0;
+        kolvoVizovov = 0;
         typoOfOperationPlayer = 0;
         typoOfOperationBot = 0;
         inGame = true;
@@ -99,7 +100,7 @@ public class NewGame extends JPanel implements ActionListener {
         betOf2 = 0;
     }
     private void checkButtonClick(){
-        buttonRaise.addActionListener(e -> {typoOfOperationPlayer = 1;betOf1 = Integer.parseInt(textField.getText());});
+        buttonRaise.addActionListener(e -> typoOfOperationPlayer = 1);
         buttonCall.addActionListener(e -> typoOfOperationPlayer = 2);
         buttonFold.addActionListener(e -> typoOfOperationPlayer = 3);
         buttonCheck.addActionListener(e -> typoOfOperationPlayer = 4);
@@ -115,26 +116,44 @@ public class NewGame extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         checkBank();
-        if (inGame) {
-            checkSecond();
+        checkSecond();
+        if(stepOfGame == 4){
+            kolvoVizovov++;
+            if(kolvoVizovov == 1) textFieldOfMove.setText(Combination.getWinner(player1,player2,card.getCardsOnTable(),bank));
+            repaint();
+            if(second>100) {
+                textFieldOfMove.setText("New Game Start!");
+                newGameSettings();
+                repaint();
+            }
+        }
+        else if (inGame) {
             checkOperations();
             playerMove();
-        }else {
-            int i = Combination.checkCombination(player1,card.getCardsOnTable());
-            newGameSettings();
-            textFieldOfMove.setText("New Game Start!");
-            repaint();
+
+        }else if(second>5) {
+                textFieldOfMove.setText("New Game Start!");
+                newGameSettings();
+                repaint();
         }
     }
 
     private void playerMove(){
         if (playerHod) {
+            if (second == 100) {
+                fold(player2);
+            }
             if(typoOfOperationBot==1){
                 raiseScrollbar.setMinimum(betOf2);
             }else{
                 raiseScrollbar.setMinimum(1);
             }
-            raiseScrollbar.setMaximum(player1.getCashOfPlayer());
+            if(player1.getCashOfPlayer()>player2.getCashOfPlayer())
+                raiseScrollbar.setMaximum(player2.getCashOfPlayer());
+
+            if(typoOfOperationPlayer==1){
+                betOf1 = Integer.parseInt(textField.getText());
+            }
             visibleOfComponents(true);
             if(betOf2>0) {
                 buttonCheck.setVisible(false);
@@ -150,9 +169,10 @@ public class NewGame extends JPanel implements ActionListener {
             if (second == 25) {
                 do{ typoOfOperationBot = new Random().nextInt(1,4);
                 }while(typoOfOperationBot == 3);
+
                 if(typoOfOperationPlayer==1&&typoOfOperationBot==4) typoOfOperationBot =2;
                 if(typoOfOperationBot==1){
-                    betOf2 = new Random().nextInt(betOf1,player2.getCashOfPlayer());
+                    betOf2 = new Random().nextInt(betOf1,player1.getCashOfPlayer());
                 }
                 if(typoOfOperationBot==2){
                     betOf2 = betOf1;
@@ -202,11 +222,10 @@ public class NewGame extends JPanel implements ActionListener {
         }
 
     }
+
     private void checkSecond() {
         second++;
-        if (second == 100) {
-            fold(player2);
-        }
+
         if(!("Time(s):"+second/5).equals(textFieldSecond.getText()))
             textFieldSecond.setText("Time(s):"+second/5);
     }
@@ -317,7 +336,7 @@ public class NewGame extends JPanel implements ActionListener {
         textFieldBank2Player.setBounds(750,90,260,30);
         add(textFieldBank2Player);
 
-        textFieldOfMove.setBounds(850,280,250,50);
+        textFieldOfMove.setBounds(850,280,200,50);
         add(textFieldOfMove);
 
         textFieldSecond.setBounds(1150,615,70,30);
@@ -325,7 +344,6 @@ public class NewGame extends JPanel implements ActionListener {
 
         textFieldBank.setBounds(620,400,150,30);
         add(textFieldBank);
-
     }
 
     public Image loadImage(String imageName) {
